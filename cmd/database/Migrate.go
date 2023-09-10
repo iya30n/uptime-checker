@@ -1,14 +1,16 @@
-package database
+package main
 
 import (
 	"fmt"
 	"uptime/internal/models/User"
+	"uptime/internal/models/Website"
 	"uptime/pkg/database/mysql"
 )
 
-func Migrate() {
+func main() {
 	migrations := map[string]interface{}{
-		"user": User.User{},
+		"user":    User.User{},
+		"website": Website.Website{},
 	}
 
 	db := mysql.Connect()
