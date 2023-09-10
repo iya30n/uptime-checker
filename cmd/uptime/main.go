@@ -2,18 +2,9 @@ package main
 
 import (
 	"fmt"
-	"os"
-
-	"github.com/joho/godotenv"
+	"uptime/pkg/config"
 )
 
 func main() {
-    err := godotenv.Load(".env")
-    if err != nil {
-        panic(err)
-    }
-
-    dbName := os.Getenv("DB_NAME")
-
-    fmt.Println(dbName)
+	fmt.Println(config.Get("DB_NAME"))
 }
