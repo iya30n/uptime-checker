@@ -1,10 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"uptime/pkg/config"
-)
+import "uptime/api/http"
 
 func main() {
-	fmt.Println(config.Get("DB_NAME"))
+	http.Serve()
 }
