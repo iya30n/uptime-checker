@@ -1,7 +1,6 @@
 package http
 
 import (
-	"log"
 	"uptime/internal/httpHandlers/auth"
 
 	"github.com/gin-gonic/gin"
@@ -12,5 +11,5 @@ func Serve() {
 	router.POST("/auth/register", auth.Register)
 	router.POST("/auth/login", auth.Login)
 
-	log.Fatalln(router.Run(":9000"))
+	router.Run(":7000")
 }
