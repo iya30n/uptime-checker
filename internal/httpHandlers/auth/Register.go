@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"uptime/internal/models/User"
 	authvalidation "uptime/internal/validations/auth"
+	"uptime/pkg/logger"
 	"uptime/pkg/mail"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func Register(c *gin.Context) {
 
 	userExists, err := user.Exists()
 	if err != nil {
-		// TODO: log the error here
+		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
 		return
 	}
@@ -38,14 +39,14 @@ func Register(c *gin.Context) {
 	}
 
 	if err := user.Save(); err != nil {
-		// TODO: log the error here
+		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
 		return
 	}
 
 	// TODO: send an email to verify the account (use a queue for sending mails with retry)
 	if err := mail.Send(user.Email, "Verification Email", "salam"); err != nil {
-		// TODO: log the error here
+		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
 		return
 	}
