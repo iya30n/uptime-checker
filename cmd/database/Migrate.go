@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"uptime/internal/models/Otp"
 	"uptime/internal/models/User"
 	"uptime/internal/models/Website"
 	"uptime/pkg/database/mysql"
@@ -9,8 +10,9 @@ import (
 
 func main() {
 	migrations := map[string]interface{}{
-		"user":    User.User{},
-		"website": Website.Website{},
+		"user":              User.User{},
+		"website":           Website.Website{},
+		"Otp": Otp.Otp{},
 	}
 
 	db := mysql.Connect()

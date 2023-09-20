@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"uptime/internal/models/Otp"
 	"uptime/internal/models/User"
 	authvalidation "uptime/internal/validations/auth"
 	"uptime/pkg/config"
@@ -48,8 +49,8 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// TODO: send an email to verify the account (use a queue for sending mails with retry)
-	if err := sendVerificationEmail(user); err != nil {
+	// TODO: use a queue for sending mails with retry
+	if err := sendVerificationEmail(user.Email); err != nil {
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
 		return
@@ -58,17 +59,32 @@ func Register(c *gin.Context) {
 	c.JSON(201, gin.H{"message": "Thanks for your registration. Please check your email and verify your account"})
 }
 
-func sendVerificationEmail(user User.User) error {
-	code := rand.Intn(99999 - 10123) + 10123
-	
+func sendVerificationEmail(email string) error {
+	code, err := generateCode(email)
+	if err != nil {
+		return err
+	}
+
 	view := view.View{
 		Path: "./views/mail/verify.html",
 		Data: map[string]string{
-			"[APP_URL]": config.Get("APP_URL"),
-			"[USER_EMAIL]": user.Email,
+			"[APP_URL]":           config.Get("APP_URL"),
+			"[USER_EMAIL]":        email,
 			"[VERIFICATION_CODE]": fmt.Sprintf("%d", code),
 		},
 	}
 
-	return mail.Send(user.Email, "Verification Email", view.Render())
+	return mail.Send(email, "Verification Email", view.Render())
+}
+
+func generateCode(email string) (int, error) {
+	// TODO: check if code is unique in otp table
+	vc := Otp.Otp{
+		Email: email,
+		Code:  rand.Intn(99999-10123) + 10123,
+	}
+
+	err := vc.Save()
+
+	return vc.Code, err
 }
