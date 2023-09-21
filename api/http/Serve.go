@@ -11,6 +11,6 @@ func Serve() {
 	router.POST("/auth/register", auth.Register)
 	router.POST("/auth/verify", auth.Verify)
 	router.POST("/auth/login", auth.Login)
-	
-	router.Run(":7000")
+		
+	router.Run("localhost:7000")
 }
