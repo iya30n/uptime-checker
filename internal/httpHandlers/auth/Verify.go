@@ -22,7 +22,7 @@ func Verify(c *gin.Context) {
 	}
 
 	user := User.User{}
-	if err := user.Find("email", params.Email); err != nil {
+	if err := user.Find("email = ?", params.Email); err != nil {
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong!"})
 		return
