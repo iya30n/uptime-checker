@@ -1,0 +1,8 @@
+.idea
+.vscode
+.env
+vendor
+go_build_uptime_cmd_uptime
+main
+uptime
+logs.txt
