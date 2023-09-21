@@ -1,7 +1,6 @@
 package jwt
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -19,7 +18,7 @@ func Refresh(token string) (string, error) {
 	}
 
 	if time.Until(claims.ExpiresAt.Time) > 30*time.Second {
-		return "", fmt.Errorf("your token is still valid")
+		return "", &TokenIsValidError{}
 	}
 
 	expireTime := time.Now().Add(time.Minute * 5)
