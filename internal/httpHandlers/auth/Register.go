@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"uptime/pkg/view"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func Register(c *gin.Context) {
@@ -85,6 +87,9 @@ func generateCode(email string) (int, error) {
 	}
 
 	err := vc.Save()
+	if errors.Is(err, gorm.ErrDuplicatedKey) {
+		return generateCode(email)
+	}
 
 	return vc.Code, err
 }
