@@ -48,5 +48,4 @@ func ResendOtp(c *gin.Context) {
 
 // throttle resend request for every 3 minutes (check if there is any middleware)
 // replace fmt.Sprintf with err.Error()
-// move generate otp method to the otp model.
 
