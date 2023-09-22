@@ -36,7 +36,7 @@ func Verify(c *gin.Context) {
 	// check if otp validation (using IsValid method on otp model)
 	// if otp is not valid, return an error and redirect to resend otp code page (in front).
 	otp := Otp.Otp{}
-	if err := otp.Find(params.Email, params.Code); err != nil || !otp.IsValid() {
+	if err := otp.First(params.Email, params.Code); err != nil || !otp.IsValid() {
 		// TODO: fill the redirect_url
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Code!", "redirect_url": ""})
 		return
