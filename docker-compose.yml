@@ -1,0 +1,25 @@
+version: "3.4"
+services:
+  db:
+    container_name: db
+    image: mariadb:10.4.26
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+      MARIADB_ROOT_PASSWORD: ""
+      MARIADB_DATABASE: "uptime_checker"
+      MARIADB_USER: "root"
+      MARIADB_PASSWORD: ""
+      MARIADB_RANDOM_ROOT_PASSWORD: ""
+    ports:
+      - "3306:3306"
+
+  uptime:
+    build: .
+    restart: always
+    ports:
+      - "7000:7000"
+    environment:
+      DB_HOST: db
+    depends_on: 
+      - db
+    # command: sh -c "./Migrate"
