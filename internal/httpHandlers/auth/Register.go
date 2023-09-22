@@ -1,9 +1,7 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"uptime/internal/models/Otp"
 	"uptime/internal/models/User"
@@ -14,13 +12,12 @@ import (
 	"uptime/pkg/view"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func Register(c *gin.Context) {
 	params := authvalidation.RegisterValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("%v", err.Error())})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -62,7 +59,8 @@ func Register(c *gin.Context) {
 }
 
 func sendVerificationEmail(email string) error {
-	code, err := generateCode(email)
+	otp := Otp.Otp{}
+	code, err := otp.GenerateCode(email)
 	if err != nil {
 		return err
 	}
@@ -77,19 +75,4 @@ func sendVerificationEmail(email string) error {
 	}
 
 	return mail.Send(email, "Verification Email", view.Render())
-}
-
-func generateCode(email string) (int, error) {
-	// TODO: check if code is unique in otp table
-	vc := Otp.Otp{
-		Email: email,
-		Code:  rand.Intn(99999-10123) + 10123,
-	}
-
-	err := vc.Save()
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return generateCode(email)
-	}
-
-	return vc.Code, err
 }
