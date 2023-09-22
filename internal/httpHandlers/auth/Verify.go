@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"time"
 	"uptime/internal/models/Otp"
@@ -9,6 +10,7 @@ import (
 	"uptime/pkg/logger"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func Verify(c *gin.Context) {
@@ -22,6 +24,11 @@ func Verify(c *gin.Context) {
 
 	user := User.User{}
 	if err := user.First("email = ?", params.Email); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "you didn't register yet!"})
+			return
+		}
+		
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong!"})
 		return
