@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"uptime/internal/models/User"
 	"uptime/internal/validations/auth"
@@ -15,7 +14,7 @@ import (
 func ResendOtp(c *gin.Context) {
 	params := auth.ResendOtpValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("%v", err.Error())})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -46,6 +45,4 @@ func ResendOtp(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Verification email sent. please check your email."})
 }
 
-// throttle resend request for every 3 minutes (check if there is any middleware)
 // replace fmt.Sprintf with err.Error()
-

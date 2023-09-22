@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 	"uptime/internal/models/Otp"
@@ -17,7 +16,7 @@ func Verify(c *gin.Context) {
 	// validate code (5 digits)
 	params := auth.VerifyValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("%v", err.Error())})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -42,7 +41,7 @@ func Verify(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Code!", "redirect_url": ""})
 		return
 	}
-	
+
 	// else update otp record used field to TRUE, then find the user and update the verified_at field
 	if err := otp.Update(map[string]interface{}{"used": true}); err != nil {
 		logger.Error(err.Error())

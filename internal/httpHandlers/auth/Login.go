@@ -2,11 +2,10 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
+	"uptime/internal/jwt"
 	"uptime/internal/models/User"
 	"uptime/internal/validations/auth"
-	"uptime/internal/jwt"
 	"uptime/pkg/logger"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +16,7 @@ import (
 func Login(c *gin.Context) {
 	params := auth.LoginValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("%v", err.Error())})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
