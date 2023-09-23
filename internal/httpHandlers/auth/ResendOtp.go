@@ -19,7 +19,7 @@ func ResendOtp(c *gin.Context) {
 	}
 
 	user := User.User{}
-	if err := user.Find("email = ?", params.Email); err != nil {
+	if err := user.First("email = ?", params.Email); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "you didn't register yet!"})
 			return

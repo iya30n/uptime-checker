@@ -21,7 +21,7 @@ func Login(c *gin.Context) {
 	}
 
 	user := User.User{}
-	if err := user.Find("username = ? OR email = ?", params.Username, params.Email); err != nil {
+	if err := user.First("username = ? OR email = ?", params.Username, params.Email); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "incorrect username or password"})
 			return

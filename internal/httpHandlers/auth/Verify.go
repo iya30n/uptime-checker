@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"time"
 	"uptime/internal/models/Otp"
@@ -9,6 +10,7 @@ import (
 	"uptime/pkg/logger"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func Verify(c *gin.Context) {
@@ -21,7 +23,12 @@ func Verify(c *gin.Context) {
 	}
 
 	user := User.User{}
-	if err := user.Find("email = ?", params.Email); err != nil {
+	if err := user.First("email = ?", params.Email); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"message": "you didn't register yet!"})
+			return
+		}
+		
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong!"})
 		return
@@ -36,7 +43,7 @@ func Verify(c *gin.Context) {
 	// check if otp validation (using IsValid method on otp model)
 	// if otp is not valid, return an error and redirect to resend otp code page (in front).
 	otp := Otp.Otp{}
-	if err := otp.Find(params.Email, params.Code); err != nil || !otp.IsValid() {
+	if err := otp.First(params.Email, params.Code); err != nil || !otp.IsValid() {
 		// TODO: fill the redirect_url
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Code!", "redirect_url": ""})
 		return
