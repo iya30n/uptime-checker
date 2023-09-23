@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN go build -mod=vendor cmd/uptime/main.go && go build -mod=vendor -o migrate cmd/database/Migrate.go
+RUN go build -mod=vendor cmd/uptime/main.go
+RUN go build -mod=vendor cmd/database/Migrate.go
 
 EXPOSE 7000
-CMD ["./main", "./migrate"]
+
+CMD ["sh", "-c", "./Migrate && ./main"]
