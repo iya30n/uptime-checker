@@ -93,6 +93,8 @@ paths:
             type: string
           example: >-
             eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VybmFtZSI6ImFsaWtoIiwiZXhwIjoxNjk1MzIzNTA0fQ.Bm4RcN9-OUm_W3G_Q5NGJXph5bMxfOR__GpUhjyU2Us
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Successful response
