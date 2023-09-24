@@ -23,6 +23,14 @@ func (Website) Get(userId uint) ([]Website, error) {
 	return websites, res.Error
 }
 
+func (w *Website) First(query string, values ...interface{}) error {
+	return db.Where(query, values...).First(&w).Error
+}
+
 func (w *Website) Store() error {
 	return db.Create(&w).Error
+}
+
+func (w *Website) Update(data map[string]interface{}) error {
+	return db.Model(&w).Updates(data).Error
 }

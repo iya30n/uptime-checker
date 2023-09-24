@@ -34,6 +34,7 @@ func Serve() {
 	website := router.Group("/website", middlewares.Auth(), middlewares.HasVerified())
 	website.GET("/", website_handler.List)
 	website.POST("/", website_handler.Create)
+	website.PUT("/:id", website_handler.Update)
 
 	router.Run(":7000")
 }
