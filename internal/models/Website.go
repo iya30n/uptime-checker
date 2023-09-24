@@ -34,3 +34,7 @@ func (w *Website) Store() error {
 func (w *Website) Update(data map[string]interface{}) error {
 	return db.Model(&w).Updates(data).Error
 }
+
+func (w *Website) Delete() error {
+	return db.Delete(&w).Error
+}
