@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"uptime/internal/models/Otp"
 	"uptime/internal/models/User"
 	authvalidation "uptime/internal/validations/auth"
@@ -41,14 +42,12 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// TODO: think about using transaction here (if sending mail filed, rollback the query).
 	if err := user.Save(); err != nil {
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
 		return
 	}
 
-	// TODO: use a queue for sending mails with retry
 	if err := sendVerificationEmail(user.Email); err != nil {
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
@@ -66,7 +65,7 @@ func sendVerificationEmail(email string) error {
 	}
 
 	view := view.View{
-		Path: "./views/mail/verify.html",
+		Path: filepath.Join("views", "mail", "verify.html"),
 		Data: map[string]string{
 			"[APP_URL]":           config.Get("APP_URL"),
 			"[USER_EMAIL]":        email,
