@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"uptime/internal/jwt"
-	"uptime/internal/models/User"
+	"uptime/internal/models"
 	"uptime/internal/validations/auth"
 	"uptime/pkg/logger"
 
@@ -20,7 +20,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	user := User.User{}
+	user := models.User{}
 	if err := user.First("username = ? OR email = ?", params.Username, params.Email); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "incorrect username or password"})

@@ -3,8 +3,8 @@ package auth
 import (
 	"fmt"
 	"net/http"
-	"uptime/internal/models/Otp"
-	"uptime/internal/models/User"
+	"path/filepath"
+	"uptime/internal/models"
 	authvalidation "uptime/internal/validations/auth"
 	"uptime/pkg/config"
 	"uptime/pkg/logger"
@@ -21,7 +21,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	user := User.User{
+	user := models.User{
 		Name:     params.Name,
 		Family:   params.Family,
 		Email:    params.Email,
@@ -41,14 +41,12 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// TODO: think about using transaction here (if sending mail filed, rollback the query).
 	if err := user.Save(); err != nil {
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
 		return
 	}
 
-	// TODO: use a queue for sending mails with retry
 	if err := sendVerificationEmail(user.Email); err != nil {
 		logger.Error(err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong..."})
@@ -59,14 +57,14 @@ func Register(c *gin.Context) {
 }
 
 func sendVerificationEmail(email string) error {
-	otp := Otp.Otp{}
+	otp := models.Otp{}
 	code, err := otp.GenerateCode(email)
 	if err != nil {
 		return err
 	}
 
 	view := view.View{
-		Path: "./views/mail/verify.html",
+		Path: filepath.Join("views", "mail", "verify.html"),
 		Data: map[string]string{
 			"[APP_URL]":           config.Get("APP_URL"),
 			"[USER_EMAIL]":        email,

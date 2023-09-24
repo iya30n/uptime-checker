@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"net/http"
-	"uptime/internal/models/User"
+	"uptime/internal/models"
 	"uptime/internal/validations/auth"
 	"uptime/pkg/logger"
 
@@ -18,7 +18,7 @@ func ResendOtp(c *gin.Context) {
 		return
 	}
 
-	user := User.User{}
+	user := models.User{}
 	if err := user.First("email = ?", params.Email); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "you didn't register yet!"})

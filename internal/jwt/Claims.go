@@ -6,10 +6,13 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-// var JwtKey []byte = []byte("simple-app-jwt-key")
 var JwtKey []byte = []byte(config.Get("JWT_KEY"))
 
 type Claims struct {
-	Username string
+	UserId uint `json:"user_id"`
+	Name   string `json:"name"`
+	Family string `json:"family"`
+	HasVerified bool `json:"has_verified"`
+
 	jwt.RegisteredClaims
 }

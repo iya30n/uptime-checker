@@ -2,24 +2,21 @@ package main
 
 import (
 	"fmt"
-	"uptime/internal/models/Otp"
-	"uptime/internal/models/User"
-	"uptime/internal/models/Website"
+	"uptime/internal/models"
 	"uptime/pkg/database/mysql"
 )
 
 func main() {
-	migrations := map[string]interface{}{
-		"user":              User.User{},
-		"website":           Website.Website{},
-		"Otp": Otp.Otp{},
+	db := mysql.Connect()
+	
+	models := []interface{}{
+		models.User{},
+		models.Website{},
+		models.Otp{},
 	}
 
-	db := mysql.Connect()
-
-	for name, migration := range migrations {
-		fmt.Printf("migrating %s \n", name)
-		db.AutoMigrate(migration)
+	if err := db.AutoMigrate(models...); err != nil {
+		panic(err)
 	}
 
 	fmt.Println("Done!")
