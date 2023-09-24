@@ -11,7 +11,10 @@ func Generate(user models.User) (string, error) {
 	expirationTime := time.Now().Add(30 * time.Minute)
 
 	claims := &Claims{
-		Username: user.Username,
+		UserId: user.ID,
+		Name: user.Name,
+		Family: user.Family,
+		HasVerified: user.HasVerified(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
