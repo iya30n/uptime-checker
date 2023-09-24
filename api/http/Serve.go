@@ -33,6 +33,7 @@ func Serve() {
 	// website routes
 	website := router.Group("/website", middlewares.Auth(), middlewares.HasVerified())
 	website.GET("/", website_handler.List)
+	website.POST("/", website_handler.Create)
 
 	router.Run(":7000")
 }
