@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-	"uptime/internal/models/Otp"
-	"uptime/internal/models/User"
+	"uptime/internal/models"
 	authvalidation "uptime/internal/validations/auth"
 	"uptime/pkg/config"
 	"uptime/pkg/logger"
@@ -22,7 +21,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	user := User.User{
+	user := models.User{
 		Name:     params.Name,
 		Family:   params.Family,
 		Email:    params.Email,
@@ -58,7 +57,7 @@ func Register(c *gin.Context) {
 }
 
 func sendVerificationEmail(email string) error {
-	otp := Otp.Otp{}
+	otp := models.Otp{}
 	code, err := otp.GenerateCode(email)
 	if err != nil {
 		return err

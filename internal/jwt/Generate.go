@@ -2,12 +2,12 @@ package jwt
 
 import (
 	"time"
-	"uptime/internal/models/User"
+	"uptime/internal/models"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func Generate(user User.User) (string, error) {
+func Generate(user models.User) (string, error) {
 	expirationTime := time.Now().Add(30 * time.Minute)
 
 	claims := &Claims{
