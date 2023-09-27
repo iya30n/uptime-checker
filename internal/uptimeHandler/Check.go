@@ -2,15 +2,22 @@ package uptimeHandler
 
 import (
 	"fmt"
+	"net"
 	"net/http"
+	"path/filepath"
 	"time"
 	"uptime/internal/models"
+
 	"uptime/pkg/influxdb"
+	"uptime/pkg/logger"
+	"uptime/pkg/mail"
+	"uptime/pkg/view"
 )
 
 func Check() {
 	// websiteChan := make(chan string)
 
+	// TODO: change this to 30 minutes
 	ticker := time.NewTicker(time.Minute * 3)
 	go func() {
 		for range ticker.C {
@@ -18,12 +25,17 @@ func Check() {
 			wModel := models.Website{}
 			wModel.With([]string{"User"})
 			websites, err := wModel.All()
-			if err != nil {
-				panic(err)
-			}
-			for _, website := range websites {
-				// websiteChan <- website.Url
-				influxdb.Write(getInfluxOptions(website.User, website, getHttpStatus(website.Url)))
+			handleErr(err)
+
+			for _, w := range websites {
+				// websiteChan <- w.Url
+				status := getHttpStatus(w.Url)
+				if status >= 500 {
+					sendEmail(w.User.Email)
+				}
+
+				err := influxdb.Write(influxOpt(w.User, w, status))
+				handleErr(err)
 			}
 		}
 	}()
@@ -34,33 +46,59 @@ func Check() {
 	} */
 }
 
+func handleErr(err error) {
+	if err != nil {
+		logger.Error(err.Error())
+		fmt.Printf("something's wrong: %s", err.Error())
+	}
+}
+
 func getHttpStatus(url string) int {
 	fmt.Printf("\n checking %s", url)
 
-	res, err := http.Get(url)
-	if err != nil {
-		panic(err)
+	if _, err := net.ResolveIPAddr("ip", url); err != nil {
+		return 500
 	}
 
-	defer res.Body.Close()
+	res, err := http.Get(url)
+	if err != nil {
+		logger.Error(err.Error())
+		return 500
+	}
+
+	defer func() {
+		err := res.Body.Close()
+		handleErr(err)
+	}()
+
 	return res.StatusCode
 }
 
-func getInfluxOptions(user models.User, website models.Website, status int) influxdb.WriteInflux {
-	// measurement := fmt.Sprintf("user_%d_website_%d", user.ID, website.ID)
-	// measurement := fmt.Sprintf("user_%d_%d", user.ID, website.ID)
-	// measurement := website.Url
-
+func influxOpt(user models.User, website models.Website, status int) influxdb.WriteInflux {
 	return influxdb.WriteInflux{
 		Measurement: "websites_uptime",
 		Tags: map[string]string{
-			"user": fmt.Sprintf("%d", user.ID),
+			"user":    fmt.Sprintf("%d", user.ID),
 			"website": fmt.Sprintf("%d", website.ID),
 		},
 		Fields: map[string]interface{}{
 			"status": status,
 		},
 	}
+}
+
+func sendEmail(email string) {
+	view := view.View{
+		Path: filepath.Join("views", "mail", "website-alert.html"),
+		Data: map[string]string{
+			// "[APP_URL]":           config.Get("APP_URL"),
+			// "[USER_EMAIL]":        email,
+			// "[VERIFICATION_CODE]": fmt.Sprintf("%d", code),
+		},
+	}
+
+	err := mail.Send(email, "Website is Down!", view.Render())
+	handleErr(err)
 }
 
 /* func worker(chn <-chan string) {
