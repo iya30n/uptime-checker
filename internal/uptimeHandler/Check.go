@@ -15,35 +15,52 @@ import (
 )
 
 func Check() {
-	// websiteChan := make(chan string)
+	websiteChan := make(chan models.Website)
 
 	// TODO: change this to 30 minutes
 	ticker := time.NewTicker(time.Minute * 3)
 	go func() {
 		for range ticker.C {
 			// TODO: read about error handling in goroutines
-			wModel := models.Website{}
-			wModel.With([]string{"User"})
-			websites, err := wModel.All()
-			handleErr(err)
 
-			for _, w := range websites {
-				// websiteChan <- w.Url
-				status := getHttpStatus(w.Url)
+			for _, w := range getWebsites() {
+				websiteChan <- w
+				/* status := getHttpStatus(w.Url)
 				if status >= 500 {
 					sendEmail(w.User.Email)
 				}
 
 				err := influxdb.Write(influxOpt(w.User, w, status))
-				handleErr(err)
+				handleErr(err) */
 			}
 		}
 	}()
 
 	// worker pool
-	/* for i := 0; i < 3; i++ {
+	for i := 0; i < 3; i++ {
 		go worker(websiteChan)
-	} */
+	}
+}
+
+func worker(chn <-chan models.Website) {
+	for w := range chn {
+		status := getHttpStatus(w.Url)
+		if status >= 500 {
+			sendEmail(w.User.Email)
+		}
+
+		err := influxdb.Write(influxOpt(w.User, w, status))
+		handleErr(err)
+	}
+}
+
+func getWebsites() []models.Website {
+	wModel := models.Website{}
+	wModel.With([]string{"User"})
+	websites, err := wModel.All()
+	handleErr(err)
+
+	return websites
 }
 
 func handleErr(err error) {
@@ -54,8 +71,6 @@ func handleErr(err error) {
 }
 
 func getHttpStatus(url string) int {
-	fmt.Printf("\n checking %s", url)
-
 	if _, err := net.ResolveIPAddr("ip", url); err != nil {
 		return 500
 	}
@@ -100,10 +115,3 @@ func sendEmail(email string) {
 	err := mail.Send(email, "Website is Down!", view.Render())
 	handleErr(err)
 }
-
-/* func worker(chn <-chan string) {
-	for w := range chn {
-		// TODO: read about error handling in goroutines
-		// res, _ := http.Get(w)
-	}
-} */
