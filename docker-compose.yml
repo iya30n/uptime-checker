@@ -12,6 +12,16 @@ services:
       MARIADB_RANDOM_ROOT_PASSWORD: ""
     ports:
       - "3306:3306"
+    volumes:
+      - "~/Docker/mysql:/var/lib/mysql"
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    volumes:
+      - "~/Docker/influxdb:/var/lib/influxdb2"
 
   uptime:
     container_name: uptime_checker
@@ -21,8 +31,10 @@ services:
       - "7000:7000"
     environment:
       DB_HOST: db
+      INFLUXDB_HOST: influxdb
     depends_on: 
       - db
+      - influxdb
   
   swagger-ui:
     image: swaggerapi/swagger-ui
@@ -30,7 +42,7 @@ services:
     ports:
       - "3000:8080"
     volumes:
-      - "/Users/yasin/go/src/uptime/doc/swagger/swagger.yml:/swagger.yaml"
+      - "~/go/src/uptime/doc/swagger/swagger.yml:/swagger.yaml"
     environment:
       SWAGGER_JSON: "/swagger.yaml"
     depends_on: 

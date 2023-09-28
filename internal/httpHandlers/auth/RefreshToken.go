@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"net/http"
+	"strings"
 	"uptime/internal/jwt"
 	"uptime/pkg/logger"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func RefreshToken(c *gin.Context) {
-	token := c.GetHeader("Authorization")
+	token := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
 	newToken, err := jwt.Refresh(token)
 	if err != nil {
 		if errors.Is(err, &jwt.TokenIsValidError{}) {
