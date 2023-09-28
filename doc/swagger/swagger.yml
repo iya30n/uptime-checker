@@ -126,6 +126,7 @@ paths:
                 name: yahoo
                 url: https://www.yahoo.com
                 check_time: 10m
+                notify: true
       parameters:
         - name: Authorization
           in: header
@@ -150,6 +151,7 @@ paths:
                 name: gogoli
                 url: https://www.google.com
                 check_time: 10m
+                notify: true
       parameters:
         - name: Authorization
           in: header

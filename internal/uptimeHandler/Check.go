@@ -45,7 +45,7 @@ func Check() {
 func worker(chn <-chan models.Website) {
 	for w := range chn {
 		status := getHttpStatus(w.Url)
-		if status >= 500 {
+		if status >= 500 && w.Notify {
 			sendEmail(w.User, w.Name)
 		}
 

@@ -6,30 +6,33 @@ import (
 )
 
 type UpdateValidation struct {
-	Name string `json:"name" binding:"required,min=3,max=100"`
-	Url  string `json:"url" binding:"required,url"`
+	Name      string        `json:"name" binding:"required,min=3,max=100"`
+	Url       string        `json:"url" binding:"required,url"`
 	CheckTime time.Duration `json:"check_time" binding:"required"`
+	Notify    bool          `json:"notify" binding:"required"`
 }
 
 func (cv *UpdateValidation) UnmarshalJSON(data []byte) error {
-    var raw struct {
-        Name      string `json:"name"`
-        Url       string `json:"url"`
-        CheckTime string `json:"check_time"`
-    }
+	var raw struct {
+		Name      string `json:"name"`
+		Url       string `json:"url"`
+		CheckTime string `json:"check_time"`
+		Notify    bool   `json:"notify"`
+	}
 
-    if err := json.Unmarshal(data, &raw); err != nil {
-        return err
-    }
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
 
-    cv.Name = raw.Name
-    cv.Url = raw.Url
-    duration, err := time.ParseDuration(raw.CheckTime)
-    if err != nil {
-        return err
-    }
+	cv.Name = raw.Name
+	cv.Url = raw.Url
+	cv.Notify = raw.Notify
+	duration, err := time.ParseDuration(raw.CheckTime)
+	if err != nil {
+		return err
+	}
 
-    cv.CheckTime = duration
-	
-    return nil
+	cv.CheckTime = duration
+
+	return nil
 }

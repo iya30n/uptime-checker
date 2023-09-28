@@ -32,6 +32,7 @@ func Create(c *gin.Context) {
 		Url:       params.Url,
 		CheckTime: params.CheckTime,
 		UserId:    claims.UserId,
+		Notify:    params.Notify,
 	}
 
 	if err := website.Store(); err != nil {

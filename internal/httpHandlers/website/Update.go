@@ -34,6 +34,7 @@ func Update(c *gin.Context) {
 		"name":       params.Name,
 		"url":        params.Url,
 		"check_time": params.CheckTime,
+		"notify":     params.Notify,
 	}
 
 	if err := website.Update(updateData); err != nil {

@@ -8,11 +8,13 @@ import (
 
 type Website struct {
 	gorm.Model
-	Name      string    `json:"name" gorm:"not null; size:100"`
-	Url       string    `json:"url" gorm:"not null"`
+	Name      string        `json:"name" gorm:"not null; size:100"`
+	Url       string        `json:"url" gorm:"not null"`
 	CheckTime time.Duration `json:"check_time" gorm:"not null"`
+	Notify    bool          `json:"notify" gorm:"not null; default:false"`
+
 	UserId uint `json:"user_id" gorm:"not null;"`
-	User   User	`json:"-"`
+	User   User `json:"-"`
 
 	preloads []string `json:"-" gorm:"-"`
 }
