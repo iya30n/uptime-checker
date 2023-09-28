@@ -15,6 +15,7 @@ func Serve() {
 	router := gin.Default()
 
 	router.Use(cors.Default())
+	// TODO: check these headers values for production
 	router.OPTIONS("/*any", func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
