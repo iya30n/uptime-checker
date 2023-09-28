@@ -46,7 +46,7 @@ func worker(chn <-chan models.Website) {
 	for w := range chn {
 		status := getHttpStatus(w.Url)
 		if status >= 500 {
-			sendEmail(w.User.Email)
+			sendEmail(w.User, w.Name)
 		}
 
 		err := influxdb.Write(influxOpt(w.User, w, status))
@@ -102,16 +102,15 @@ func influxOpt(user models.User, website models.Website, status int) influxdb.Wr
 	}
 }
 
-func sendEmail(email string) {
+func sendEmail(user models.User, websiteName string) {
 	view := view.View{
 		Path: filepath.Join("views", "mail", "website-alert.html"),
 		Data: map[string]string{
-			// "[APP_URL]":           config.Get("APP_URL"),
-			// "[USER_EMAIL]":        email,
-			// "[VERIFICATION_CODE]": fmt.Sprintf("%d", code),
+			"[USER]":       user.Name,
+			"WEBSITE_NAME": websiteName,
 		},
 	}
 
-	err := mail.Send(email, "Website is Down!", view.Render())
+	err := mail.Send(user.Email, "Website is Down!", view.Render())
 	handleErr(err)
 }
