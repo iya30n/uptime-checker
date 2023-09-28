@@ -17,27 +17,39 @@ import (
 func Check() {
 	websiteChan := make(chan models.Website)
 
-	// TODO: change this to 30 minutes
-	ticker := time.NewTicker(time.Minute * 3)
 	go func() {
-		for range ticker.C {
-			// TODO: read about error handling in goroutines
+		thirtySecondTicker := time.NewTicker(time.Second * 30)
+		sixtySecondTicker := time.NewTicker(time.Minute * 1)
+		fiveMinuteTicker := time.NewTicker(time.Minute * 5)
+		thirtyMinuteTicker := time.NewTicker(time.Minute * 30)
 
-			for _, w := range getWebsites() {
-				websiteChan <- w
-				/* status := getHttpStatus(w.Url)
-				if status >= 500 {
-					sendEmail(w.User.Email)
+		for {
+			select {
+			case <-thirtySecondTicker.C:
+				for _, w := range getWebsites(time.Second * 30) {
+					websiteChan <- w
 				}
 
-				err := influxdb.Write(influxOpt(w.User, w, status))
-				handleErr(err) */
+			case <-sixtySecondTicker.C:
+				for _, w := range getWebsites(time.Minute * 1) {
+					websiteChan <- w
+				}
+
+			case <-fiveMinuteTicker.C:
+				for _, w := range getWebsites(time.Minute * 5) {
+					websiteChan <- w
+				}
+
+			case <-thirtyMinuteTicker.C:
+				for _, w := range getWebsites(time.Minute * 30) {
+					websiteChan <- w
+				}
 			}
 		}
 	}()
 
 	// worker pool
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 5; i++ {
 		go worker(websiteChan)
 	}
 }
@@ -54,10 +66,10 @@ func worker(chn <-chan models.Website) {
 	}
 }
 
-func getWebsites() []models.Website {
+func getWebsites(du time.Duration) []models.Website {
 	wModel := models.Website{}
 	wModel.With([]string{"User"})
-	websites, err := wModel.All()
+	websites, err := wModel.Find("check_time = ?", du)
 	handleErr(err)
 
 	return websites

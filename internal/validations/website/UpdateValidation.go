@@ -2,6 +2,7 @@ package website
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -27,12 +28,19 @@ func (cv *UpdateValidation) UnmarshalJSON(data []byte) error {
 	cv.Name = raw.Name
 	cv.Url = raw.Url
 	cv.Notify = raw.Notify
-	duration, err := time.ParseDuration(raw.CheckTime)
-	if err != nil {
-		return err
-	}
 
-	cv.CheckTime = duration
+	switch raw.CheckTime {
+	case "30s":
+		cv.CheckTime = 30 * time.Second
+	case "1m":
+		cv.CheckTime = time.Minute
+	case "5m":
+		cv.CheckTime = 5 * time.Minute
+	case "30m":
+		cv.CheckTime = 30 * time.Minute
+	default:
+		return fmt.Errorf("check_time must be one of the following: 30s, 1m, 5m, 30m")
+	}
 
 	return nil
 }

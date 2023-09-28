@@ -35,6 +35,18 @@ func (w Website) All() ([]Website, error) {
 	return websites, res.Error
 }
 
+func (w Website) Find(query string, values ...any) ([]Website, error) {
+	var websites []Website
+	mydb := db
+	for _, p := range w.preloads {
+		mydb = db.Preload(p)
+	}
+
+	res := mydb.Where(query, values...).Find(&websites)
+
+	return websites, res.Error
+}
+
 func (w Website) Get(userId uint) ([]Website, error) {
 	var websites []Website
 

@@ -4,6 +4,12 @@ info:
   version: 1.0.0
 servers:
   - url: http://0.0.0.0:7000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /auth/register:
     post:
@@ -84,13 +90,6 @@ paths:
       tags:
         - default
       summary: refresh token
-      requestBody:
-        content: {}
-      parameters:
-        - name: Authorization
-          in: header
-          schema:
-            type: string
       security:
         - bearerAuth: []
       responses:
@@ -125,7 +124,9 @@ paths:
               example:
                 name: yahoo
                 url: https://www.yahoo.com
-                check_time: 10m
+                check_time:
+                  type: string
+                  enum: [30s, 1m, 5m, 30m]
                 notify: true
       parameters:
         - name: Authorization
@@ -150,7 +151,9 @@ paths:
               example:
                 name: gogoli
                 url: https://www.google.com
-                check_time: 10m
+                check_time:
+                  type: string
+                  enum: [30s, 1m, 5m, 30m]
                 notify: true
       parameters:
         - name: Authorization
