@@ -1,11 +1,10 @@
 package http
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"time"
 	"uptime/internal/middlewares"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 
 	auth_handler "uptime/internal/httpHandlers/auth"
 	website_handler "uptime/internal/httpHandlers/website"
@@ -14,14 +13,8 @@ import (
 func Serve() {
 	router := gin.Default()
 
-	router.Use(cors.Default())
 	// TODO: check these headers values for production
-	router.OPTIONS("/*any", func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		c.Status(http.StatusOK)
-	})
+	router.Use(middlewares.CORS())
 
 	// auth routes
 	auth := router.Group("/auth")
