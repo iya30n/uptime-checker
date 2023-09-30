@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
 	"uptime/internal/jwt"
 	"uptime/internal/models"
 	"uptime/pkg/logger"
@@ -11,7 +12,9 @@ import (
 
 func HasVerified() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		claims, err := jwt.Parse(c.GetHeader("Authorization"))
+		token := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
+
+		claims, err := jwt.Parse(token)
 		if err != nil {
 			logger.Error(err.Error())
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Something went wrong"})
