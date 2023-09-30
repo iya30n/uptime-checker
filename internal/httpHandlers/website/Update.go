@@ -33,8 +33,8 @@ func Update(c *gin.Context) {
 	updateData := map[string]interface{}{
 		"name":       params.Name,
 		"url":        params.Url,
-		"check_time": params.CheckTime,
-		"notify":     params.Notify,
+		"check_time": params.GetChcekTimeDur(),
+		"notify":     *params.Notify,
 	}
 
 	if err := website.Update(updateData); err != nil {
