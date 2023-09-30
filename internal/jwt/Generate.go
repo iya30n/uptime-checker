@@ -8,7 +8,7 @@ import (
 )
 
 func Generate(user models.User) (string, error) {
-	expirationTime := time.Now().Add(30 * time.Minute)
+	expirationTime := time.Now().Add(24 * time.Hour)
 
 	claims := &Claims{
 		UserId: user.ID,
