@@ -2,6 +2,7 @@ package influxdb
 
 import (
 	"context"
+	"errors"
 	"time"
 	"uptime/pkg/config"
 
@@ -16,6 +17,10 @@ type WriteInflux struct {
 
 func Write(writeOptions WriteInflux) error {
 	client := Connect()
+
+	if client == nil {
+		return errors.New("influx client is nil")
+	}
 
 	writeAPI := client.WriteAPIBlocking(config.Get("INFLUXDB_ORG_NAME"), config.Get("INFLUXDB_BUCKET_NAME"))
 

@@ -32,10 +32,10 @@ services:
     environment:
       DB_HOST: db
       INFLUXDB_HOST: influxdb
-    depends_on: 
+    depends_on:
       - db
       - influxdb
-  
+
   swagger-ui:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
@@ -45,5 +45,5 @@ services:
       - "~/go/src/uptime/doc/swagger/swagger.yml:/swagger.yaml"
     environment:
       SWAGGER_JSON: "/swagger.yaml"
-    depends_on: 
+    depends_on:
       - uptime
