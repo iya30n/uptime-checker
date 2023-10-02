@@ -14,7 +14,7 @@ import (
 func Update(c *gin.Context) {
 	params := website.UpdateValidation{}
 	if err := c.ShouldBindJSON(&params); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
 		return
 	}
 

@@ -11,8 +11,7 @@ var doOnce sync.Once
 
 func Get(name string) string {
 	doOnce.Do(func() {
-		err := godotenv.Load(".env")
-		if err != nil {
+		if err := godotenv.Load(".env"); err != nil {
 			panic(err)
 		}
 	})

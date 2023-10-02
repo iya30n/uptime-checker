@@ -17,7 +17,7 @@ func Verify(c *gin.Context) {
 	// validate code (5 digits)
 	params := auth.VerifyValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
 		return
 	}
 
