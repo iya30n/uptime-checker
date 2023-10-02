@@ -17,7 +17,7 @@ import (
 func Create(c *gin.Context) {
 	params := website.CreateValidation{}
 	if err := c.ShouldBindJSON(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
 		return
 	}
 

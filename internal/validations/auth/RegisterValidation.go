@@ -1,6 +1,10 @@
 package auth
 
+import "uptime/internal/validations"
+
 type RegisterValidation struct {
+	validations.Parser
+
 	Name     string `json:"name" binding:"required,min=3,max=50"`
 	Family   string `json:"family" binding:"required,min=3,max=50"`
 	Email    string `json:"email" binding:"required,email,min=8,max=70"`
