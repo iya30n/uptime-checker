@@ -4,14 +4,24 @@ services:
     container_name: db
     image: mariadb:10.4.26
     environment:
-      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
-      MARIADB_ROOT_PASSWORD: ""
-      MARIADB_DATABASE: "uptime_checker"
-      MARIADB_USER: "root"
-      MARIADB_PASSWORD: ""
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: ${DB_EMPTY_ROOT_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_RANDOM_ROOT_PASSWORD: ""
     ports:
       - "3306:3306"
+    volumes:
+      - "~/Docker/mysql:/var/lib/mysql"
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb:1.8
+    ports:
+      - "8086:8086"
+    volumes:
+      - "~/Docker/influxdb:/var/lib/influxdb2"
 
   uptime:
     container_name: uptime_checker
@@ -21,17 +31,19 @@ services:
       - "7000:7000"
     environment:
       DB_HOST: db
-    depends_on: 
+      INFLUXDB_HOST: influxdb
+    depends_on:
       - db
-  
+      - influxdb
+
   swagger-ui:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
     ports:
       - "3000:8080"
     volumes:
-      - "/Users/yasin/go/src/uptime/doc/swagger/swagger.yml:/swagger.yaml"
+      - "~/go/src/uptime/doc/swagger/swagger.yml:/swagger.yaml"
     environment:
       SWAGGER_JSON: "/swagger.yaml"
-    depends_on: 
+    depends_on:
       - uptime

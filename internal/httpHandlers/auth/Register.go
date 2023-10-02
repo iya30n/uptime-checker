@@ -17,7 +17,7 @@ import (
 func Register(c *gin.Context) {
 	params := authvalidation.RegisterValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
 		return
 	}
 

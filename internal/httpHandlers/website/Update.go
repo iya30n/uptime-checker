@@ -14,7 +14,7 @@ import (
 func Update(c *gin.Context) {
 	params := website.UpdateValidation{}
 	if err := c.ShouldBindJSON(&params); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
 		return
 	}
 
@@ -33,7 +33,8 @@ func Update(c *gin.Context) {
 	updateData := map[string]interface{}{
 		"name":       params.Name,
 		"url":        params.Url,
-		"check_time": params.CheckTime,
+		"check_time": params.GetChcekTimeDur(),
+		"notify":     *params.Notify,
 	}
 
 	if err := website.Update(updateData); err != nil {

@@ -4,6 +4,12 @@ info:
   version: 1.0.0
 servers:
   - url: http://0.0.0.0:7000
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 paths:
   /auth/register:
     post:
@@ -19,8 +25,8 @@ paths:
                 name: test
                 family: test family
                 email: test@gmail.com
-                username: test
-                password: test021
+                username: test0211
+                password: test0211
       responses:
         "200":
           description: Successful response
@@ -55,8 +61,8 @@ paths:
             schema:
               type: object
               example:
-                username: test
-                password: test021
+                username: test0211
+                password: test0211
       responses:
         "200":
           description: Successful response
@@ -84,13 +90,77 @@ paths:
       tags:
         - default
       summary: refresh token
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json: {}
+  /website:
+    get:
+      tags:
+        - website
+      summary: list
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json: {}
+    post:
+      tags:
+        - website
+      summary: create
       requestBody:
-        content: {}
-      parameters:
-        - name: Authorization
-          in: header
-          schema:
-            type: string
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: yahoo
+                url: https://www.yahoo.com
+                check_time:
+                  type: string
+                  enum: [30s, 1m, 5m, 30m]
+                notify: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json: {}
+  /website/:id:
+    put:
+      tags:
+        - website
+      summary: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: gogoli
+                url: https://www.google.com
+                check_time:
+                  type: string
+                  enum: [30s, 1m, 5m, 30m]
+                notify: true
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json: {}
+  /website/:website_id:
+    delete:
+      tags:
+        - website
+      summary: delete
       security:
         - bearerAuth: []
       responses:

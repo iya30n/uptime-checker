@@ -1,35 +1,21 @@
 package website
 
 import (
-	"encoding/json"
 	"time"
+	"uptime/internal/validations"
 )
 
 type UpdateValidation struct {
-	Name string `json:"name" binding:"required,min=3,max=100"`
-	Url  string `json:"url" binding:"required,url"`
-	CheckTime time.Duration `json:"check_time" binding:"required"`
+	validations.Parser
+
+	Name      string `json:"name" binding:"required,min=3,max=100"`
+	Url       string `json:"url" binding:"required,url"`
+	CheckTime string `json:"check_time" binding:"required,oneof=30s 1m 5m 30m" time_format:"15m"`
+	Notify    *bool  `json:"notify" binding:"required"`
 }
 
-func (cv *UpdateValidation) UnmarshalJSON(data []byte) error {
-    var raw struct {
-        Name      string `json:"name"`
-        Url       string `json:"url"`
-        CheckTime string `json:"check_time"`
-    }
+func (u *UpdateValidation) GetChcekTimeDur() time.Duration {
+	t, _ := time.ParseDuration(u.CheckTime)
 
-    if err := json.Unmarshal(data, &raw); err != nil {
-        return err
-    }
-
-    cv.Name = raw.Name
-    cv.Url = raw.Url
-    duration, err := time.ParseDuration(raw.CheckTime)
-    if err != nil {
-        return err
-    }
-
-    cv.CheckTime = duration
-	
-    return nil
+	return t
 }

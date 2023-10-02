@@ -16,7 +16,7 @@ import (
 func Login(c *gin.Context) {
 	params := auth.LoginValidation{}
 	if err := c.ShouldBind(&params); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
 		return
 	}
 
