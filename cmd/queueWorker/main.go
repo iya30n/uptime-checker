@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 	"uptime/internal/jobs"
+	"uptime/pkg/logger"
 	"uptime/pkg/queue"
 	"uptime/pkg/redis"
 )
@@ -12,6 +13,8 @@ import (
 var regJobs map[string]jobs.QueueableJob = map[string]jobs.QueueableJob{
 	"upq:otp": &jobs.Email{},
 }
+
+var inProgress map[string]bool = make(map[string]bool)
 
 func main() {
 
@@ -23,7 +26,7 @@ func main() {
 			panic(err)
 		}
 
-		if len(scmd.Val()) < 1 {
+		if qlen := len(scmd.Val()); qlen < 1 || qlen == len(inProgress) {
 			time.Sleep(5 * time.Second)
 			continue
 		}
@@ -33,22 +36,32 @@ func main() {
 				continue
 			}
 
+			if _, ok := inProgress[qname]; ok {
+				continue
+			}
+
 			go work(qname)
 		}
 	}
 }
 
 func work(name string) {
+	inProgress[name] = true
 	for {
 		job, err := queue.Dequeue(name)
 
-		if job.Payload == nil {
-			continue
+		if err != nil {
+			logger.Error(err.Error())
+			// TODO: save the payload to db as failed job
+			break
 		}
 
-		if err != nil {
-			panic(err)
+		if job.Payload == nil {
+			break
+		}
 
+		jt := regJobs[name]
+		if !jt.Handle() {
 			if job.TryCount == 0 {
 				// TODO: save the payload to db as failed
 				fmt.Printf("job failed: %v \n", job.Encode())
@@ -60,8 +73,7 @@ func work(name string) {
 			queue.Enqueue(name, job)
 			continue
 		}
-
-		jt := regJobs[name]
-		jt.Handle()
 	}
+
+	delete(inProgress, name)
 }

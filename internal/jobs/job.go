@@ -3,7 +3,7 @@ package jobs
 import "encoding/json"
 
 type QueueableJob interface {
-	Handle()
+	Handle() bool
 }
 
 type Job struct {

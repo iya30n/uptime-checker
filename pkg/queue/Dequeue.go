@@ -11,7 +11,7 @@ func Dequeue(name string) (jobs.Job, error) {
 	stringcmd := rc.RPop(context.Background(), name)
 
 	if len(stringcmd.Val()) < 1 {
-		return jobs.Job{}, nil
+		return jobs.Job{}, stringcmd.Err()
 	}
 
 	return jobs.Decode([]byte(stringcmd.Val())), stringcmd.Err()
