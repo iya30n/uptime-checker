@@ -11,7 +11,7 @@ import (
 )
 
 var regJobs map[string]jobs.QueueableJob = map[string]jobs.QueueableJob{
-	"upq:otp": &jobs.Email{},
+	"upq:otp": &jobs.EmailJob{},
 }
 
 var inProgress map[string]bool = make(map[string]bool)
@@ -61,6 +61,7 @@ func work(name string) {
 		}
 
 		jt := regJobs[name]
+		jt.SetData(job.Payload)
 		if !jt.Handle() {
 			if job.TryCount == 0 {
 				// TODO: save the payload to db as failed
@@ -70,7 +71,12 @@ func work(name string) {
 
 			job.TryCount--
 
-			queue.Enqueue(name, job)
+			if queue.Enqueue(name, job) != nil {
+				logger.Error(err.Error())
+				// TODO: save the payload to db as failed job
+				break
+			}
+
 			continue
 		}
 	}

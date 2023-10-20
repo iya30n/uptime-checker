@@ -3,11 +3,14 @@ package jobs
 import "encoding/json"
 
 type QueueableJob interface {
+	SetData(payload JobPayload)
 	Handle() bool
 }
 
+type JobPayload map[string]interface{}
+
 type Job struct {
-	Payload  map[string]interface{}
+	Payload  JobPayload
 	TryCount int
 }
 
