@@ -11,7 +11,7 @@ import (
 )
 
 var regJobs map[string]jobs.QueueableJob = map[string]jobs.QueueableJob{
-	"upq:otp": &jobs.EmailJob{},
+	"upq:email": &jobs.EmailJob{},
 }
 
 var inProgress map[string]bool = make(map[string]bool)

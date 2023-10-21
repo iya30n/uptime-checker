@@ -1,7 +1,8 @@
 package jobs
 
 import (
-	"fmt"
+	"uptime/pkg/logger"
+	"uptime/pkg/mail"
 )
 
 type EmailJob struct {
@@ -14,6 +15,12 @@ func (e *EmailJob) SetData(data JobPayload) {
 
 func (e *EmailJob) Handle() bool {
 	// TODO: handle should return a bool to check for retry
-	fmt.Printf("sending email to: %s", e.Data["email"])
+	email, title, view := e.Data["email"].(string), e.Data["title"].(string), e.Data["view"].(string)
+
+	if err := mail.Send(email, title, view); err != nil {
+		logger.Error(err.Error())
+		return false
+	}
+
 	return true
 }

@@ -1,6 +1,8 @@
 package jobs
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type QueueableJob interface {
 	SetData(payload JobPayload)

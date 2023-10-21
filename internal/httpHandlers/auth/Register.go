@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"uptime/internal/jobs"
 	"uptime/internal/models"
 	authvalidation "uptime/internal/validations/auth"
 	"uptime/pkg/config"
 	"uptime/pkg/logger"
-	"uptime/pkg/mail"
+	"uptime/pkg/queue"
 	"uptime/pkg/view"
 
 	"github.com/gin-gonic/gin"
@@ -72,5 +73,13 @@ func sendVerificationEmail(email string) error {
 		},
 	}
 
-	return mail.Send(email, "Verification Email", view.Render())
+	job := jobs.Job{
+		Payload: jobs.JobPayload{
+			"email": email,
+			"title": "Verification Email",
+			"view": view.Render(),
+		},
+	}
+
+	return queue.Enqueue("upq:email", job)
 }
