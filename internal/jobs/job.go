@@ -2,6 +2,8 @@ package jobs
 
 import (
 	"encoding/json"
+	"uptime/internal/models"
+	"uptime/pkg/logger"
 )
 
 type QueueableJob interface {
@@ -32,4 +34,29 @@ func Decode(job []byte) Job {
 	}
 
 	return j
+}
+
+func (j *Job) Failed(queueName string) {
+	ep, err := j.encodePayload()
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+
+	jm := models.Job{
+		Status:    "failed",
+		Payload:   ep,
+		QueueName: queueName,
+	}
+
+	jm.Save()
+}
+
+func (j *Job) encodePayload() (string, error) {
+	bt, err := json.Marshal(&j.Payload)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bt), nil
 }

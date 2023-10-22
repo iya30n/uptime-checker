@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"time"
 	"uptime/internal/jobs"
 	"uptime/pkg/logger"
@@ -52,7 +51,7 @@ func work(name string) {
 
 		if err != nil {
 			logger.Error(err.Error())
-			// TODO: save the payload to db as failed job
+			job.Failed(name)
 			break
 		}
 
@@ -64,8 +63,7 @@ func work(name string) {
 		jt.SetData(job.Payload)
 		if !jt.Handle() {
 			if job.TryCount == 0 {
-				// TODO: save the payload to db as failed
-				fmt.Printf("job failed: %v \n", job.Encode())
+				job.Failed(name)
 				continue
 			}
 
@@ -73,7 +71,7 @@ func work(name string) {
 
 			if queue.Enqueue(name, job) != nil {
 				logger.Error(err.Error())
-				// TODO: save the payload to db as failed job
+				job.Failed(name)
 				break
 			}
 
