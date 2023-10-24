@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	redis2 "github.com/redis/go-redis/v9"
 	"time"
 	"uptime/internal/jobs"
 	"uptime/pkg/logger"
@@ -50,6 +52,10 @@ func work(name string) {
 		job, err := queue.Dequeue(name)
 
 		if err != nil {
+			if errors.Is(err, redis2.Nil) {
+				break
+			}
+
 			logger.Error(err.Error())
 			job.Failed(name)
 			break
