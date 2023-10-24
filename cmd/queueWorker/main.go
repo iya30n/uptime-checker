@@ -67,13 +67,13 @@ func work(name string) {
 				continue
 			}
 
+			job.TryCount--
+
 			if queue.Enqueue(name, job) != nil {
 				logger.Error(err.Error())
 				job.Failed(name)
 				break
 			}
-
-			job.TryCount--
 
 			continue
 		}
