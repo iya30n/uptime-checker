@@ -57,7 +57,7 @@ func work(name string) {
 			}
 
 			logger.Error(err.Error())
-			job.Failed(name)
+			job.Fail(name)
 			break
 		}
 
@@ -69,7 +69,7 @@ func work(name string) {
 		jt.SetData(job.Payload)
 		if !jt.Handle() {
 			if job.TryCount == 0 {
-				job.Failed(name)
+				job.Fail(name)
 				continue
 			}
 
@@ -77,7 +77,7 @@ func work(name string) {
 
 			if queue.Enqueue(name, job) != nil {
 				logger.Error(err.Error())
-				job.Failed(name)
+				job.Fail(name)
 				break
 			}
 
