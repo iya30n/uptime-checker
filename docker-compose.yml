@@ -35,6 +35,7 @@ services:
     depends_on:
       - db
       - influxdb
+      - redis
 
   swagger-ui:
     image: swaggerapi/swagger-ui
@@ -42,8 +43,16 @@ services:
     ports:
       - "3000:8080"
     volumes:
-      - "~/go/src/uptime/doc/swagger/swagger.yml:/swagger.yaml"
+      - "./doc/swagger/swagger.yml:/swagger.yaml"
     environment:
       SWAGGER_JSON: "/swagger.yaml"
     depends_on:
       - uptime
+
+  redis:
+    container_name: redis
+    image: redis:7.2.2
+    ports:
+      - "3679:3679"
+    volumes:
+      - "~/Docker/influxdb:/var/lib/redis"
