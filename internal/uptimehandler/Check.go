@@ -1,4 +1,4 @@
-package uptimeHandler
+package uptimehandler
 
 import (
 	"fmt"
@@ -128,7 +128,7 @@ func sendEmail(user models.User, websiteName string) {
 		Payload: jobs.JobPayload{
 			"email": user.Email,
 			"title": "Website is Down!",
-			"view": view.Render(),
+			"view":  view.Render(),
 		},
 	}
 

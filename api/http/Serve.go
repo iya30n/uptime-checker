@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	auth_handler "uptime/internal/httpHandlers/auth"
-	website_handler "uptime/internal/httpHandlers/website"
+	auth_handler "uptime/internal/httphandlers/auth"
+	website_handler "uptime/internal/httphandlers/website"
 )
 
 func Serve() {

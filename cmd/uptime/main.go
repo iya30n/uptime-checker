@@ -2,11 +2,11 @@ package main
 
 import (
 	"uptime/api/http"
-	"uptime/internal/uptimeHandler"
+	"uptime/internal/uptimehandler"
 )
 
 func main() {
-	uptimeHandler.Check()
+	uptimehandler.Check()
 
 	http.Serve()
 }
