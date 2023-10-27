@@ -15,6 +15,10 @@ func (j *FailedJob) Save() error {
 
 func (j *FailedJob) Failed() ([]*FailedJob, error) {
 	var jobs []*FailedJob
-	res := db.Group("queue_name").Find(&jobs)
+	res := db.Find(&jobs)
 	return jobs, res.Error
+}
+
+func (j *FailedJob) Delete() error {
+	return db.Unscoped().Delete(&j).Error
 }
