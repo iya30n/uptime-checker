@@ -36,14 +36,14 @@ func Decode(job []byte) Job {
 	return j
 }
 
-func (j *Job) Failed(queueName string) {
+func (j *Job) Fail(queueName string) {
 	ep, err := j.encodePayload()
 	if err != nil {
 		logger.Error(err.Error())
 		return
 	}
 
-	jm := models.Job{
+	jm := models.FailedJob{
 		Status:    "failed",
 		Payload:   ep,
 		QueueName: queueName,

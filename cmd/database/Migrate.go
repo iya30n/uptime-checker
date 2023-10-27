@@ -13,7 +13,7 @@ func main() {
 		models.User{},
 		models.Website{},
 		models.Otp{},
-		models.Job{},
+		models.FailedJob{},
 	}
 
 	if err := db.AutoMigrate(models...); err != nil {
