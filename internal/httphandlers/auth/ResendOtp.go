@@ -44,5 +44,3 @@ func ResendOtp(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "Verification email sent. please check your email."})
 }
-
-// replace fmt.Sprintf with err.Error()

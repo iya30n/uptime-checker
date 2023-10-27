@@ -8,11 +8,12 @@ import (
 
 func main() {
 	db := mysql.Connect()
-	
+
 	models := []interface{}{
 		models.User{},
 		models.Website{},
 		models.Otp{},
+		models.FailedJob{},
 	}
 
 	if err := db.AutoMigrate(models...); err != nil {

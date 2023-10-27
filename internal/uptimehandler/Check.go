@@ -1,4 +1,4 @@
-package uptimeHandler
+package uptimehandler
 
 import (
 	"fmt"
@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"path/filepath"
 	"time"
+	"uptime/internal/jobs"
 	"uptime/internal/models"
 
 	"uptime/pkg/influxdb"
 	"uptime/pkg/logger"
-	"uptime/pkg/mail"
+	"uptime/pkg/queue"
 	"uptime/pkg/view"
 )
 
@@ -123,6 +124,14 @@ func sendEmail(user models.User, websiteName string) {
 		},
 	}
 
-	err := mail.Send(user.Email, "Website is Down!", view.Render())
+	job := jobs.Job{
+		Payload: jobs.JobPayload{
+			"email": user.Email,
+			"title": "Website is Down!",
+			"view":  view.Render(),
+		},
+	}
+
+	err := queue.Enqueue("upq:email", job)
 	handleErr(err)
 }

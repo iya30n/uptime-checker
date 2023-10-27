@@ -1,17 +1,11 @@
 package auth
 
 import (
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
-	"path/filepath"
 	"uptime/internal/models"
 	authvalidation "uptime/internal/validations/auth"
-	"uptime/pkg/config"
 	"uptime/pkg/logger"
-	"uptime/pkg/mail"
-	"uptime/pkg/view"
-
-	"github.com/gin-gonic/gin"
 )
 
 func Register(c *gin.Context) {
@@ -54,23 +48,4 @@ func Register(c *gin.Context) {
 	}
 
 	c.JSON(201, gin.H{"message": "Thanks for your registration. Please check your email and verify your account"})
-}
-
-func sendVerificationEmail(email string) error {
-	otp := models.Otp{}
-	code, err := otp.GenerateCode(email)
-	if err != nil {
-		return err
-	}
-
-	view := view.View{
-		Path: filepath.Join("views", "mail", "verify.html"),
-		Data: map[string]string{
-			"[APP_URL]":           config.Get("APP_URL"),
-			"[USER_EMAIL]":        email,
-			"[VERIFICATION_CODE]": fmt.Sprintf("%d", code),
-		},
-	}
-
-	return mail.Send(email, "Verification Email", view.Render())
 }

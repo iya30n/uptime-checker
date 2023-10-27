@@ -1,46 +1,49 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"math/rand"
 	"time"
-
-	"gorm.io/gorm"
+	"uptime/pkg/redis"
 )
 
 type Otp struct {
-	gorm.Model
-	Email string `json:"email" gorm:"not null"`
-	Code  int    `json:"code" gorm:"not null; unique"`
-	Used  bool   `json:"used"`
+	Email string `json:"email"`
+	Code  int    `json:"code"`
 }
 
-func (o *Otp) First(email string, code int) error {
-	return db.Where("email = ? AND code = ?", email, code).First(&o).Error
+func (o *Otp) Get(email string, code int) error {
+	var err error
+
+	scmd := redis.Connect().Get(context.Background(), email)
+	if err = scmd.Err(); err != nil {
+		return err
+	}
+
+	o.Email = email
+	o.Code, err = scmd.Int()
+
+	if o.Code != code {
+		err = errors.New("Invalid code")
+	}
+
+	return err
 }
 
-func (o *Otp) Save() error {
-	return db.Create(&o).Error
-}
+func (o *Otp) Set() error {
+	res := redis.Connect().Set(context.Background(), o.Email, o.Code, 3*time.Minute)
 
-func (o *Otp) Update(data map[string]interface{}) error {
-	return db.Model(&o).Updates(data).Error
+	return res.Err()
 }
 
 func (Otp) GenerateCode(email string) (int, error) {
 	oc := Otp{
 		Email: email,
-		Code: rand.Intn(99999-10123) + 10123,
+		Code:  rand.Intn(99999-10123) + 10123,
 	}
 
-	err := oc.Save()
-	if errors.Is(err, gorm.ErrDuplicatedKey) {
-		return oc.GenerateCode(email)
-	}
+	err := oc.Set()
 
 	return oc.Code, err
-}
-
-func (o Otp) IsValid() bool {
-	return !o.Used && o.CreatedAt.After(time.Now().Add(-time.Minute * 3))
 }
