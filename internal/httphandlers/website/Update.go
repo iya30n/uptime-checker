@@ -3,6 +3,8 @@ package website
 import (
 	"errors"
 	"net/http"
+	"strings"
+	"uptime/internal/jwt"
 	"uptime/internal/models"
 	"uptime/internal/validations/website"
 	"uptime/pkg/logger"
@@ -12,6 +14,14 @@ import (
 )
 
 func Update(c *gin.Context) {
+	token := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
+	claims, err := jwt.Parse(token)
+	if err != nil {
+		logger.Error(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong!"})
+		return
+	}
+
 	params := website.UpdateValidation{}
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": params.Parse(err)})
@@ -20,7 +30,7 @@ func Update(c *gin.Context) {
 
 	websiteId := c.Param("id")
 	website := models.Website{}
-	if err := website.First("id = ?", websiteId); err != nil {
+	if err := website.First("id = ? and user_id = ?", websiteId, claims.UserId); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"message": "Website not found"})
 			return
