@@ -1,25 +1,21 @@
 package website
 
 import (
-	"errors"
 	"net/http"
-	"uptime/internal/models"
 	"uptime/pkg/logger"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func Delete(c *gin.Context) {
-	website := models.Website{}
-	if err := website.First("id = ?", c.Param("id")); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"message": "Website not found"})
-			return
-		}
+	userId, err := getAuthId(c)
+	if err != nil {
+		return
+	}
 
-		logger.Error(err.Error())
-		c.JSON(404, gin.H{"message": "Website not found"})
+	websiteId := c.Param("id")
+	website, ok := getWebsite(c, userId, websiteId)
+	if !ok {
 		return
 	}
 
