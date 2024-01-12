@@ -33,25 +33,15 @@ func Verify(c *gin.Context) {
 		return
 	}
 
-	// check if user already verified
 	if user.HasVerified() {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "your account already verified!"})
 		return
 	}
 
-	// check if otp validation (using IsValid method on otp model)
-	// if otp is not valid, return an error and redirect to resend otp code page (in front).
 	otp := models.Otp{}
-	if err := otp.First(params.Email, params.Code); err != nil || !otp.IsValid() {
+	if err := otp.Get(params.Email, params.Code); err != nil {
 		// TODO: fill the redirect_url
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Code!", "redirect_url": ""})
-		return
-	}
-
-	// else update otp record used field to TRUE, then find the user and update the verified_at field
-	if err := otp.Update(map[string]interface{}{"used": true}); err != nil {
-		logger.Error(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong!"})
 		return
 	}
 

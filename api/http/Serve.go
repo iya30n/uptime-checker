@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	auth_handler "uptime/internal/httpHandlers/auth"
-	website_handler "uptime/internal/httpHandlers/website"
+	auth_handler "uptime/internal/httphandlers/auth"
+	website_handler "uptime/internal/httphandlers/website"
 )
 
 func Serve() {
@@ -30,6 +30,7 @@ func Serve() {
 	website.POST("/", website_handler.Create)
 	website.PUT("/:id", website_handler.Update)
 	website.DELETE("/:id", website_handler.Delete)
+	website.GET("/:id", website_handler.UptimeHistory)
 
 	router.Run(":7000")
 }
