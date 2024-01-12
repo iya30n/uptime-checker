@@ -30,6 +30,7 @@ func Serve() {
 	website.POST("/", website_handler.Create)
 	website.PUT("/:id", website_handler.Update)
 	website.DELETE("/:id", website_handler.Delete)
+	website.GET("/:id", website_handler.UptimeHistory)
 
 	router.Run(":7000")
 }

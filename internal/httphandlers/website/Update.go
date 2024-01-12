@@ -26,7 +26,8 @@ func Update(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusNotFound, gin.H{"message": "Website not found"})
+		logger.Error(err.Error())
+		c.JSON(http.StatusNotFound, gin.H{"message": "Something went wrong"})
 		return
 	}
 
