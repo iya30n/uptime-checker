@@ -2,10 +2,7 @@ package website
 
 import (
 	"errors"
-	"log"
 	"net/http"
-	"strings"
-	"uptime/internal/jwt"
 	"uptime/internal/models"
 	"uptime/internal/validations/website"
 	"uptime/pkg/logger"
@@ -21,11 +18,8 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	token := strings.Replace(c.GetHeader("Authorization"), "Bearer ", "", 1)
-	claims, err := jwt.Parse(token)
+	userId, err := getAuthId(c)
 	if err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Something went wrong"})
 		return
 	}
 
@@ -33,7 +27,7 @@ func Create(c *gin.Context) {
 		Name:      params.Name,
 		Url:       params.Url,
 		CheckTime: params.GetChcekTimeDur(),
-		UserId:    claims.UserId,
+		UserId:    userId,
 		Notify:    *params.Notify,
 	}
 
