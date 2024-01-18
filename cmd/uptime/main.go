@@ -2,7 +2,7 @@ package main
 
 import (
 	"uptime/api/http"
-	"uptime/internal/uptimehandler"
+	"uptime/internal/uptimeHandler"
 )
 
 func main() {
