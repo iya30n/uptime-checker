@@ -7,4 +7,4 @@ COPY . .
 RUN go build -mod=vendor cmd/queue/Work.go
 RUN go build -mod=vendor cmd/queue/Retry.go
 
-CMD ["sh", "-c", "./Worker"]
+CMD ["sh", "-c", "./Work"]
