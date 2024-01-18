@@ -36,6 +36,18 @@ services:
       - db
       - influxdb
       - redis
+  
+  queue-worker:
+    container_name: uptime_queue_worker
+    build:
+      context: .
+      dockerfile: ./Dockerfile-worker
+    restart: always
+    environment:
+      DB_HOST: db
+    depends_on:
+      - db
+      - redis
 
   swagger-ui:
     image: swaggerapi/swagger-ui

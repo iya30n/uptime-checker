@@ -1,0 +1,10 @@
+FROM golang:1.21 as go
+
+WORKDIR /app
+
+COPY . .
+
+RUN go build -mod=vendor cmd/queue/Work.go
+RUN go build -mod=vendor cmd/queue/Retry.go
+
+CMD ["sh", "-c", "./Worker"]
