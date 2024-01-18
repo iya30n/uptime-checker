@@ -4,4 +4,5 @@
 vendor
 go_build_uptime_cmd_uptime
 main
+Work
 logs.txt
