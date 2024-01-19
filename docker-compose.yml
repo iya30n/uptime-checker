@@ -70,7 +70,7 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
     volumes:
-      - "~/Docker/influxdb:/var/lib/redis"
+      - "~/Docker/redis:/var/lib/redis"
     networks:
       - uptime_network
 
