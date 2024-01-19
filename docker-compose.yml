@@ -11,24 +11,27 @@ services:
       MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_RANDOM_ROOT_PASSWORD: ""
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - "~/Docker/mysql:/var/lib/mysql"
+    networks:
+      - uptime_network
 
   influxdb:
     container_name: influxdb
     image: influxdb:latest
     ports:
-      - "8086:8086"
+      - "127.0.0.1:8086:8086"
     volumes:
       - "~/Docker/influxdb:/var/lib/influxdb2"
+    networks:
+      - uptime_network
 
   uptime:
     container_name: uptime_checker
     build: .
-    restart: always
     ports:
-      - "7000:7000"
+      - "127.0.0.1:7000:7000"
     environment:
       DB_HOST: db
       INFLUXDB_HOST: influxdb
@@ -36,35 +39,47 @@ services:
       - db
       - influxdb
       - redis
+    networks:
+      - uptime_network
   
   queue-worker:
     container_name: uptime_queue_worker
     build:
       context: .
       dockerfile: ./Dockerfile-worker
-    restart: always
     environment:
       DB_HOST: db
     depends_on:
       - db
       - redis
+    networks:
+      - uptime_network
 
   swagger-ui:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
     ports:
-      - "3000:8080"
+      - "127.0.0.1:3000:8080"
     volumes:
       - "./doc/swagger/swagger.yml:/swagger.yaml"
     environment:
       SWAGGER_JSON: "/swagger.yaml"
     depends_on:
       - uptime
+    networks:
+      - uptime_network
 
   redis:
     container_name: redis
     image: redis:7.2.2
     ports:
-      - "3679:3679"
+      - "127.0.0.1:6380:6379"
     volumes:
       - "~/Docker/influxdb:/var/lib/redis"
+    networks:
+      - uptime_network
+
+networks:
+  uptime_network:
+    name: uptime_network
+    driver: bridge
