@@ -32,9 +32,6 @@ services:
     build: .
     ports:
       - "127.0.0.1:7000:7000"
-    environment:
-      DB_HOST: db
-      INFLUXDB_HOST: influxdb
     depends_on:
       - db
       - influxdb
@@ -47,8 +44,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile-worker
-    environment:
-      DB_HOST: db
     depends_on:
       - db
       - redis
@@ -73,7 +68,7 @@ services:
     container_name: redis
     image: redis:7.2.2
     ports:
-      - "127.0.0.1:6380:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - "~/Docker/influxdb:/var/lib/redis"
     networks:
